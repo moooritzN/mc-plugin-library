@@ -1,5 +1,8 @@
 # Dimensions – Nether und End ein- oder ausschalten.
 # Änderungen mit /dimensions reload übernehmen (Berechtigung: dimensions.admin).
+# Alternativ per Befehl umschalten – wird direkt hier gespeichert:
+#   /dimensions activate <nether|end>
+#   /dimensions deactivate <nether|end>
 #
 # Ist eine Dimension deaktiviert, gilt:
 #  - Spieler und andere Entities können sie nicht mehr über Portale betreten, Spieler auch nicht per Enderperle.

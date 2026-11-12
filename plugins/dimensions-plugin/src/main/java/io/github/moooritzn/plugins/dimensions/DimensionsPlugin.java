@@ -19,7 +19,8 @@ import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Erlaubt es, den Nether und/oder das End über die config.yml zu deaktivieren.
+ * Erlaubt es, den Nether und/oder das End über die config.yml oder per Befehl
+ * ({@code /dimensions activate|deactivate <nether|end>}) zu deaktivieren.
  *
  * <p>Deaktivierte Dimensionen können nicht mehr über Portale betreten werden, und Spieler, die sich
  * darin befinden, werden in eine aktive Welt gebracht. Teleports per Befehl oder durch andere Plugins
@@ -45,7 +46,8 @@ public final class DimensionsPlugin extends BasePlugin {
         registerListeners(new PortalListener(this), new PlayerListener(this));
         getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, event ->
                 event.registrar().register(DimensionsCommand.create(this),
-                        "Zeigt den Status der Dimensionen an oder lädt die Konfiguration neu", List.of()));
+                        "Nether und End aktivieren/deaktivieren, Status anzeigen oder Konfiguration neu laden",
+                        List.of()));
 
         // Spieler, die schon vor dem Aktivieren online waren (z.B. nach /reload)
         moveAllOutOfDisabledDimensions();
@@ -76,10 +78,30 @@ public final class DimensionsPlugin extends BasePlugin {
         return moveAllOutOfDisabledDimensions();
     }
 
+    /**
+     * Aktiviert oder deaktiviert eine Dimension zur Laufzeit (per Befehl), speichert die Änderung in der
+     * config.yml und bringt Spieler aus einer nun deaktivierten Dimension heraus.
+     *
+     * @param dimension {@link Environment#NETHER} oder {@link Environment#THE_END}
+     * @return Anzahl der Spieler, die aus der Dimension gebracht werden
+     */
+    int setDimensionEnabled(Environment dimension, boolean enabled) {
+        // Erst neu einlesen, damit saveConfig() keine noch nicht geladenen Änderungen an der Datei überschreibt
+        reloadConfig();
+        loadSettings();
+        settings = settings.with(dimension, enabled);
+        getConfig().set(DimensionSettings.configKey(dimension), enabled);
+        saveConfig();
+        getSLF4JLogger().info("{} per Befehl {}", DimensionSettings.displayName(dimension), stateName(enabled));
+        return moveAllOutOfDisabledDimensions();
+    }
+
     private void loadSettings() {
         FileConfiguration config = getConfig();
         // Fehlende Werte kommen aus der config.yml im JAR (Defaults von JavaPlugin#reloadConfig)
-        settings = new DimensionSettings(readToggle(config, "Nether"), readToggle(config, "End"));
+        settings = new DimensionSettings(
+                readToggle(config, DimensionSettings.configKey(Environment.NETHER)),
+                readToggle(config, DimensionSettings.configKey(Environment.THE_END)));
         messages = new Messages(
                 readMessage(config, "Nachrichten.Portal-gesperrt"),
                 readMessage(config, "Nachrichten.Portal-entzuenden-gesperrt"),

@@ -34,6 +34,24 @@ record DimensionSettings(boolean netherEnabled, boolean endEnabled) {
         return from != target && !isEnabled(target);
     }
 
+    /** Kopie dieser Einstellungen, in der die angegebene Dimension (Nether oder End) umgeschaltet ist. */
+    DimensionSettings with(Environment dimension, boolean enabled) {
+        return switch (dimension) {
+            case NETHER -> new DimensionSettings(enabled, endEnabled);
+            case THE_END -> new DimensionSettings(netherEnabled, enabled);
+            default -> throw new IllegalArgumentException("Nicht umschaltbare Dimension: " + dimension);
+        };
+    }
+
+    /** Schlüssel der Dimension in der config.yml ({@code Nether} bzw. {@code End}). */
+    static String configKey(Environment dimension) {
+        return switch (dimension) {
+            case NETHER -> "Nether";
+            case THE_END -> "End";
+            default -> throw new IllegalArgumentException("Nicht umschaltbare Dimension: " + dimension);
+        };
+    }
+
     /** Anzeigename einer Dimension für Spielernachrichten. */
     static String displayName(Environment environment) {
         return switch (environment) {

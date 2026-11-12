@@ -1,6 +1,8 @@
 package io.github.moooritzn.plugins.dimensions;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.bukkit.World.Environment;
@@ -42,6 +44,22 @@ class DimensionSettingsTest {
         assertFalse(settings.blocksEntry(Environment.THE_END, Environment.NORMAL));
         // z.B. End-Gateway, während ein Admin per /tp im deaktivierten End ist
         assertFalse(settings.blocksEntry(Environment.THE_END, Environment.THE_END));
+    }
+
+    @Test
+    void withTogglesOnlyTheGivenDimension() {
+        DimensionSettings settings = new DimensionSettings(true, true);
+        assertEquals(new DimensionSettings(false, true), settings.with(Environment.NETHER, false));
+        assertEquals(new DimensionSettings(true, false), settings.with(Environment.THE_END, false));
+        assertEquals(settings, settings.with(Environment.NETHER, true));
+        assertThrows(IllegalArgumentException.class, () -> settings.with(Environment.NORMAL, false));
+    }
+
+    @Test
+    void configKeysMatchConfigYml() {
+        assertEquals("Nether", DimensionSettings.configKey(Environment.NETHER));
+        assertEquals("End", DimensionSettings.configKey(Environment.THE_END));
+        assertThrows(IllegalArgumentException.class, () -> DimensionSettings.configKey(Environment.CUSTOM));
     }
 
     @Test
