@@ -1,50 +1,73 @@
 name: Release
 
-# Wird durch das Pushen eines Tags wie "v0.1.0" ausgelöst:
-#   git tag v0.1.0 && git push origin v0.1.0
-# Tags mit Bindestrich (z.B. "v0.2.0-beta.1") werden als Pre-Release markiert.
+# Wird ausgelöst, wenn ein Pull Request in develop gemergt wird.
+# Die Version kommt aus gradle.properties (ohne "-SNAPSHOT").
+# Existiert das Release "v<version>" bereits, wird nichts veröffentlicht –
+# für ein neues Release also die Version in gradle.properties im PR erhöhen.
 on:
-  push:
-    tags:
-      - "v*"
+  pull_request:
+    types: [closed]
+    branches: [develop]
 
 permissions:
   contents: write
 
+concurrency:
+  group: release
+  cancel-in-progress: false
+
 jobs:
   release:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
     steps:
       - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.merge_commit_sha }}
+
+      - name: Version bestimmen
+        id: version
+        run: |
+          version=$(sed -n 's/^version=//p' gradle.properties | tr -d '\r')
+          version=${version%-SNAPSHOT}
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          if gh release view "v$version" > /dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::Release v$version existiert bereits – übersprungen. Version in gradle.properties erhöhen, um ein neues Release zu erstellen."
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
 
       - uses: actions/setup-java@v5
+        if: steps.version.outputs.exists == 'false'
         with:
           distribution: temurin
           java-version: 25
 
       - uses: gradle/actions/setup-gradle@v5
-
-      - name: Version aus Tag bestimmen
-        id: version
-        run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+        if: steps.version.outputs.exists == 'false'
 
       - name: Build & Test
+        if: steps.version.outputs.exists == 'false'
         run: ./gradlew build -Pversion=${{ steps.version.outputs.version }}
 
       - name: Plugin-JARs sammeln
+        if: steps.version.outputs.exists == 'false'
         run: |
           mkdir -p release
           find plugins/*/build/libs -name '*.jar' ! -name '*-plain.jar' -exec cp {} release/ \;
           ls -l release
 
       - name: GitHub-Release erstellen
+        if: steps.version.outputs.exists == 'false'
         env:
-          GH_TOKEN: ${{ github.token }}
           VERSION: ${{ steps.version.outputs.version }}
+          TARGET: ${{ github.event.pull_request.merge_commit_sha }}
         run: |
-          prerelease=""
-          if [[ "$VERSION" == *-* ]]; then prerelease="--prerelease"; fi
-          gh release create "$GITHUB_REF_NAME" release/*.jar \
-            --title "$GITHUB_REF_NAME" \
-            --generate-notes \
-            $prerelease
+          gh release create "v$VERSION" release/*.jar \
+            --target "$TARGET" \
+            --title "v$VERSION" \
+            --generate-notes

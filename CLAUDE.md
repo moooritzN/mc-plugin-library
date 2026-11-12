@@ -31,6 +31,11 @@ Kein lokales Gradle verwenden – immer den Wrapper (`./gradlew`). Java 25 ist P
 - Code-Kommentare, Javadoc und Nutzertexte auf Deutsch; Commit-Messages auf Englisch.
 - Hauptbranch ist `develop`.
 
+## Releases (GitHub Actions)
+
+- **Release** (`release.yml`): bei jedem gemergten PR auf `develop`. Version = `version` aus `gradle.properties` ohne `-SNAPSHOT`. Existiert `v<version>` schon, wird übersprungen → für ein Release die Version im PR erhöhen. Keine Tags manuell pushen.
+- **Dev-Build** (`dev-build.yml`): bei `[deploy]` in der Commit-Message (beliebiger Branch). Ersetzt das rollierende Pre-Release `dev`; Assets heißen `<plugin>-dev.jar`. `[deploy]` nur setzen, wenn der User es verlangt.
+
 ## Commit Messages
 **IMPORTANT**: Do NOT include Claude Code attribution in commit messages. Specifically:
 - Do NOT add "🤖 Generated with [Claude Code](https://claude.com/claude-code)"

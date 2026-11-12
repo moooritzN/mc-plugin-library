@@ -1,0 +1,70 @@
+name: Dev-Build
+
+# Wird bei jedem Push ausgelöst, dessen (letzte) Commit-Message "[deploy]" enthält.
+# Ersetzt das Pre-Release "dev" durch die neuesten Plugin-JARs.
+# Feste Download-Links: .../releases/download/dev/<plugin-name>-dev.jar
+on:
+  push:
+    branches: ["**"]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: dev-build
+  cancel-in-progress: true
+
+jobs:
+  dev-build:
+    if: contains(github.event.head_commit.message, '[deploy]')
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 25
+
+      - uses: gradle/actions/setup-gradle@v5
+
+      - name: Version bestimmen
+        id: version
+        run: |
+          base=$(sed -n 's/^version=//p' gradle.properties | tr -d '\r')
+          base=${base%-SNAPSHOT}
+          echo "version=$base-dev.$GITHUB_RUN_NUMBER+${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+
+      - name: Build & Test
+        run: ./gradlew build "-Pversion=${{ steps.version.outputs.version }}"
+
+      - name: Plugin-JARs sammeln
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          mkdir -p release
+          for jar in plugins/*/build/libs/*.jar; do
+            [[ "$jar" == *-plain.jar ]] && continue
+            name=$(basename "$jar" "-$VERSION.jar")
+            cp "$jar" "release/$name-dev.jar"
+          done
+          ls -l release
+
+      - name: Dev-Release ersetzen
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          gh release delete dev --cleanup-tag --yes || true
+          gh release create dev release/*.jar \
+            --target "$GITHUB_SHA" \
+            --prerelease \
+            --latest=false \
+            --title "Dev-Build" \
+            --notes "Automatischer Dev-Build – nicht für Produktivserver.
+
+          - Version: \`$VERSION\`
+          - Branch: \`$GITHUB_REF_NAME\`
+          - Commit: $GITHUB_SHA"

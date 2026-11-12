@@ -41,16 +41,28 @@ Plugins relocated (`<plugin-package>.libs.mclib`), damit sich mehrere Plugins ni
 
 ## Releases
 
-Fertige Plugin-JARs gibt es unter **Releases** auf GitHub. Ein neues Release wird durch einen Tag ausgelöst:
+Fertige Plugin-JARs gibt es unter **Releases** auf GitHub.
 
-```sh
-git tag v0.1.0
-git push origin v0.1.0
+### Release
+
+Wird ein Pull Request in `develop` gemergt, erstellt der [Release-Workflow](.github/workflows/release.yml)
+das Release `v<version>` mit allen Plugin-JARs. Die Version kommt aus [gradle.properties](gradle.properties)
+(ohne `-SNAPSHOT`, aus `0.2.0-SNAPSHOT` wird `v0.2.0`).
+
+Existiert das Release für diese Version bereits, wird nichts veröffentlicht. Für ein neues Release
+also im PR die Version in `gradle.properties` erhöhen.
+
+### Dev-Build
+
+Enthält die Commit-Message eines Pushes `[deploy]` (auf beliebigem Branch), baut der
+[Dev-Build-Workflow](.github/workflows/dev-build.yml) die Plugins und ersetzt das Pre-Release `dev`.
+Die JARs haben feste Download-Links:
+
+```
+https://github.com/moooritzN/mc-plugin-library/releases/download/dev/<plugin-name>-dev.jar
 ```
 
-Der [Release-Workflow](.github/workflows/release.yml) baut dann mit der Version aus dem Tag (`0.1.0`)
-und hängt alle Plugin-JARs an das Release. Tags mit Bindestrich (z.B. `v0.2.0-beta.1`) werden
-als Pre-Release markiert.
+Die genaue Version (z.B. `0.2.0-dev.42+abc1234`) steht in der `plugin.yml` des JARs.
 
 ## Testserver starten
 
