@@ -1,0 +1,50 @@
+name: Release
+
+# Wird durch das Pushen eines Tags wie "v0.1.0" ausgelöst:
+#   git tag v0.1.0 && git push origin v0.1.0
+# Tags mit Bindestrich (z.B. "v0.2.0-beta.1") werden als Pre-Release markiert.
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 25
+
+      - uses: gradle/actions/setup-gradle@v5
+
+      - name: Version aus Tag bestimmen
+        id: version
+        run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Build & Test
+        run: ./gradlew build -Pversion=${{ steps.version.outputs.version }}
+
+      - name: Plugin-JARs sammeln
+        run: |
+          mkdir -p release
+          find plugins/*/build/libs -name '*.jar' ! -name '*-plain.jar' -exec cp {} release/ \;
+          ls -l release
+
+      - name: GitHub-Release erstellen
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          prerelease=""
+          if [[ "$VERSION" == *-* ]]; then prerelease="--prerelease"; fi
+          gh release create "$GITHUB_REF_NAME" release/*.jar \
+            --title "$GITHUB_REF_NAME" \
+            --generate-notes \
+            $prerelease

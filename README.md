@@ -39,6 +39,19 @@ Die fertigen Plugin-JARs liegen danach unter `plugins/<name>/build/libs/<name>-<
 Die Library-Klassen werden per Shadow in das Plugin eingebettet und in das Package des
 Plugins relocated (`<plugin-package>.libs.mclib`), damit sich mehrere Plugins nicht in die Quere kommen.
 
+## Releases
+
+Fertige Plugin-JARs gibt es unter **Releases** auf GitHub. Ein neues Release wird durch einen Tag ausgelöst:
+
+```sh
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+Der [Release-Workflow](.github/workflows/release.yml) baut dann mit der Version aus dem Tag (`0.1.0`)
+und hängt alle Plugin-JARs an das Release. Tags mit Bindestrich (z.B. `v0.2.0-beta.1`) werden
+als Pre-Release markiert.
+
 ## Testserver starten
 
 ```sh
