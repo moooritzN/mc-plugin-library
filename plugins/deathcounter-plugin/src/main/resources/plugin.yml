@@ -1,0 +1,5 @@
+name: Deathcounter
+version: '${version}'
+main: io.github.moooritzn.plugins.deathcounter.DeathcounterPlugin
+api-version: '${apiVersion}'
+description: Zeigt die Tode aller Spieler in der Tab-Spielerliste an
