@@ -23,7 +23,8 @@ Bibliothek und Sammlung von Minecraft-Server-Plugins für [Paper](https://paperm
 ├── libs/
 │   └── core/                    # -> Gradle-Projekt :mclib-core
 └── plugins/
-    └── deathcounter-plugin/     # -> Gradle-Projekt :deathcounter-plugin
+    ├── deathcounter-plugin/     # -> Gradle-Projekt :deathcounter-plugin
+    └── dimensions-plugin/       # -> Gradle-Projekt :dimensions-plugin (Nether/End deaktivierbar)
 ```
 
 Neue Ordner unter `libs/` und `plugins/` werden automatisch in den Build aufgenommen,
