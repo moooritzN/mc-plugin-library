@@ -7,7 +7,7 @@ Bibliothek + Sammlung von Minecraft-Server-Plugins für **Paper** (Gradle-Multip
 ```sh
 ./gradlew build                          # alles bauen + testen
 ./gradlew :mclib-core:test               # Tests eines Moduls
-./gradlew :example-plugin:runServer      # Paper-Testserver mit Plugin starten (lädt Server herunter)
+./gradlew :deathcounter-plugin:runServer  # Paper-Testserver mit Plugin starten (lädt Server herunter)
 ```
 
 Kein lokales Gradle verwenden – immer den Wrapper (`./gradlew`). Java 25 ist Pflicht (Paper-API 26.x verlangt es).

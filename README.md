@@ -23,7 +23,8 @@ Bibliothek und Sammlung von Minecraft-Server-Plugins für [Paper](https://paperm
 ├── libs/
 │   └── core/                    # -> Gradle-Projekt :mclib-core
 └── plugins/
-    └── example-plugin/          # -> Gradle-Projekt :example-plugin
+    ├── deathcounter-plugin/     # -> Gradle-Projekt :deathcounter-plugin
+    └── dimensions-plugin/       # -> Gradle-Projekt :dimensions-plugin (Nether/End deaktivierbar)
 ```
 
 Neue Ordner unter `libs/` und `plugins/` werden automatisch in den Build aufgenommen,
@@ -67,11 +68,11 @@ Die genaue Version (z.B. `0.2.0-dev.42+abc1234`) steht in der `plugin.yml` des J
 ## Testserver starten
 
 ```sh
-./gradlew :example-plugin:runServer
+./gradlew :deathcounter-plugin:runServer
 ```
 
 Lädt automatisch einen Paper-Server der passenden Version herunter und startet ihn
-mit dem Plugin im Ordner `plugins/example-plugin/run/`.
+mit dem Plugin im Ordner `plugins/deathcounter-plugin/run/`.
 
 ## Neue Library anlegen
 

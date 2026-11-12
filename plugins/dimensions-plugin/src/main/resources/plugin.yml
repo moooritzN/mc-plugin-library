@@ -1,0 +1,10 @@
+name: Dimensions
+version: '${version}'
+main: io.github.moooritzn.plugins.dimensions.DimensionsPlugin
+api-version: '${apiVersion}'
+description: Erlaubt es, den Nether und das End per Konfiguration zu deaktivieren
+
+permissions:
+  dimensions.admin:
+    description: Erlaubt /dimensions (Status, activate, deactivate, reload)
+    default: op

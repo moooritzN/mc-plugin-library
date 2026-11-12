@@ -1,0 +1,27 @@
+# Dimensions – Nether und End ein- oder ausschalten.
+# Änderungen mit /dimensions reload übernehmen (Berechtigung: dimensions.admin).
+# Alternativ per Befehl umschalten – wird direkt hier gespeichert:
+#   /dimensions activate <nether|end>
+#   /dimensions deactivate <nether|end>
+#
+# Ist eine Dimension deaktiviert, gilt:
+#  - Spieler und andere Entities können sie nicht mehr über Portale betreten, Spieler auch nicht per Enderperle.
+#  - Spieler, die sich dort befinden, werden beim Betreten des Servers bzw. beim Neuladen
+#    zu ihrem Respawn-Punkt (falls dieser in einer aktiven Welt liegt) oder zum Spawn der Hauptwelt gebracht.
+#  - Teleports per Befehl (/tp, /execute in ...) oder durch andere Plugins sind weiterhin möglich.
+
+# Nether aktiviert? Bei false können außerdem keine neuen Netherportale entzündet werden.
+Nether: true
+
+# End aktiviert?
+End: true
+
+# Nachrichten an Spieler im MiniMessage-Format (https://docs.papermc.io/adventure/minimessage/format/).
+# Platzhalter: <dimension> = Name der Dimension (Nether oder End)
+Nachrichten:
+  # Wird in der Actionbar angezeigt, wenn ein Portal in eine deaktivierte Dimension benutzt wird.
+  Portal-gesperrt: "<red>Die Dimension <gold><dimension></gold> ist auf diesem Server deaktiviert."
+  # Wird in der Actionbar angezeigt, wenn ein Netherportal entzündet werden soll, der Nether aber deaktiviert ist.
+  Portal-entzuenden-gesperrt: "<red>Netherportale können nicht entzündet werden – der <gold>Nether</gold> ist deaktiviert."
+  # Wird im Chat angezeigt, wenn ein Spieler aus einer deaktivierten Dimension herausgebracht wurde.
+  Herausteleportiert: "<yellow>Die Dimension <gold><dimension></gold> ist deaktiviert – du wurdest in eine aktive Welt gebracht."
