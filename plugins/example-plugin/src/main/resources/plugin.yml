@@ -1,0 +1,5 @@
+name: ExamplePlugin
+version: '${version}'
+main: io.github.moooritzn.plugins.example.ExamplePlugin
+api-version: '${apiVersion}'
+description: Beispiel-Plugin, das die mclib-core Bibliothek nutzt
