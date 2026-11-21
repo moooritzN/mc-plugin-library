@@ -39,8 +39,11 @@ class TablistSettingsTest {
     }
 
     @Test
-    void negativeBlankLinesAreRejected() {
+    void negativeBlankLinesAreRejectedExceptAuto() {
         assertThrows(IllegalArgumentException.class,
-                () -> new TablistSettings("https://example.org/p.zip", "", false, "", "", "", "", -1));
+                () -> new TablistSettings("https://example.org/p.zip", "", false, "", "", "", "", -2));
+        assertEquals(TablistHeader.AUTO,
+                new TablistSettings("https://example.org/p.zip", "", false, "", "", "", "", TablistHeader.AUTO)
+                        .blankLines());
     }
 }

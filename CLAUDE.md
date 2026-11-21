@@ -19,6 +19,7 @@ Kein lokales Gradle verwenden – immer den Wrapper (`./gradlew`). Java 25 ist P
 - Neue Ordner werden von [settings.gradle.kts](settings.gradle.kts) automatisch eingebunden, sobald sie eine `build.gradle.kts` haben – nichts manuell in `settings` eintragen.
 - Build-Logik gehört in die Convention-Plugins unter [build-logic/src/main/kotlin/](build-logic/src/main/kotlin/), nicht in einzelne Modul-Builds.
 - Resource Packs: `plugins/<name>/src/resourcepack/` (mit `pack.mcmeta`) wird von der Plugin-Convention automatisch zu `build/resourcepack/<name>-resourcepack.zip` gepackt (reproduzierbar, ohne Version im Namen) und von den Release-/Dev-Workflows mit hochgeladen. Bei Minecraft-Updates `max_format` in `pack.mcmeta` anheben.
+- Bilder als Schrift-Glyphen (z.B. für Tab-Liste/Chat): Glyphen größer als 256×256 Pixel stellt Minecraft nicht dar (Ersatzzeichen ▯). Dafür den Task `FontImageTask` aus build-logic nutzen – er zerlegt das Bild in Kacheln und erzeugt Textur, Font-JSON und eine Properties-Datei mit der Zeichenfolge (Beispiel: `plugins/tablist-image-plugin/build.gradle.kts`).
 - Alle Versionen nur in [gradle/libs.versions.toml](gradle/libs.versions.toml). Die Minecraft-Version (`api-version`, `runServer`) wird aus der `paper`-Version abgeleitet (`26.3.build.200-stable` → `26.3`).
 
 ## Wichtige Konventionen

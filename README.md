@@ -58,12 +58,16 @@ https://github.com/moooritzN/mc-plugin-library/releases/download/dev/<name>-reso
 
 ### TablistImage – Grafik austauschen
 
-1. Bild als PNG nach `plugins/tablist-image-plugin/src/resourcepack/assets/tablistimage/textures/font/bild.png`
-   legen (Transparenz erlaubt, Seitenverhältnis beliebig).
-2. In `assets/tablistimage/font/bild.json` die Anzeigehöhe `height` (in GUI-Pixeln) anpassen –
-   die Breite ergibt sich aus dem Seitenverhältnis. `ascent` auf `7` lassen (Bild beginnt oben in der Zeile).
-3. In der `config.yml` des Servers `Bild.Leerzeilen` auf `height / 9` (aufgerundet) `- 1` setzen,
-   damit Text unter dem Bild nicht überdeckt wird.
+1. Bild als PNG nach `plugins/tablist-image-plugin/src/banner/bild.png` legen
+   (Transparenz erlaubt, Größe und Seitenverhältnis beliebig).
+2. Optional in [plugins/tablist-image-plugin/build.gradle.kts](plugins/tablist-image-plugin/build.gradle.kts)
+   die Anzeigehöhe `displayHeight` (GUI-Pixel, eine Textzeile = 9) anpassen – die Breite ergibt sich aus dem
+   Seitenverhältnis.
+
+Beim Build zerlegt `FontImageTask` ([build-logic](build-logic/src/main/kotlin/FontImageTask.kt)) das Bild
+automatisch in Kacheln von max. 256×256 Pixeln – größere Schrift-Glyphen kann Minecraft nicht darstellen
+(es erscheint nur ein Ersatzzeichen ▯). Textur und Font-JSON landen im Resource Pack, die Zeichenfolge als
+`bild.properties` im Plugin-JAR. Die Leerzeilen unter dem Bild berechnet das Plugin selbst (`Bild.Leerzeilen: auto`).
 
 ## Releases
 

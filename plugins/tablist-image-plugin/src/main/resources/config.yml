@@ -26,6 +26,5 @@ Tab-Liste:
 
 Bild:
   # Anzahl Leerzeilen, die nach <bild> eingefügt werden, damit nachfolgender Text nicht von der Grafik
-  # überdeckt wird. Faustregel: Bildhöhe aus der Font-Datei (height) / 9, aufgerundet, minus 1.
-  # Standard-Grafik (Zittern-Banner): height 60 -> 6
-  Leerzeilen: 6
+  # überdeckt wird. auto = aus der Bildhöhe berechnen (empfohlen), sonst eine Zahl.
+  Leerzeilen: auto

@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
  * @param header            Kopfzeile mit geladenem Pack (MiniMessage, {@code <bild>} = Grafik)
  * @param headerWithoutPack Kopfzeile ohne Pack (MiniMessage)
  * @param footer            Fußzeile (MiniMessage)
- * @param blankLines        Leerzeilen nach der Grafik
+ * @param blankLines        Leerzeilen nach der Grafik, oder {@link TablistHeader#AUTO}
  */
 record TablistSettings(
         String packUrl,
@@ -34,8 +34,8 @@ record TablistSettings(
             throw new IllegalArgumentException(
                     "Resource-Pack.SHA1 muss leer sein oder aus 40 Hex-Zeichen bestehen: " + packSha1);
         }
-        if (blankLines < 0) {
-            throw new IllegalArgumentException("Bild.Leerzeilen darf nicht negativ sein: " + blankLines);
+        if (blankLines < 0 && blankLines != TablistHeader.AUTO) {
+            throw new IllegalArgumentException("Bild.Leerzeilen muss 'auto' oder eine Zahl >= 0 sein: " + blankLines);
         }
     }
 

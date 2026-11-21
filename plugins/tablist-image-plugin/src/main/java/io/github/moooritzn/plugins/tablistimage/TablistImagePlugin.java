@@ -3,6 +3,8 @@ package io.github.moooritzn.plugins.tablistimage;
 import io.github.moooritzn.mclib.plugin.BasePlugin;
 import io.github.moooritzn.mclib.text.Text;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
@@ -33,6 +35,8 @@ public final class TablistImagePlugin extends BasePlugin {
     /** Spieler, deren Client das Pack erfolgreich geladen hat. */
     private final Set<UUID> packLoaded = ConcurrentHashMap.newKeySet();
 
+    /** Die Grafik als Zeichenfolge (aus der beim Build generierten bild.properties). */
+    private @Nullable Banner banner;
     private @Nullable TablistSettings settings;
     /** Aktuelles Pack, {@code null} solange es nicht bereit ist (Hash wird noch berechnet oder Fehler). */
     private @Nullable ResourcePackInfo pack;
@@ -41,6 +45,17 @@ public final class TablistImagePlugin extends BasePlugin {
 
     @Override
     public void onEnable() {
+        try (InputStream in = getResource(Banner.RESOURCE)) {
+            if (in == null) {
+                throw new IOException(Banner.RESOURCE + " fehlt im Plugin-JAR");
+            }
+            banner = Banner.load(in);
+        } catch (IOException e) {
+            getSLF4JLogger().error("Grafik-Daten konnten nicht geladen werden – TablistImage wird deaktiviert", e);
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+
         saveDefaultConfig();
         if (!reload()) {
             getSLF4JLogger().error("Ungültige config.yml – TablistImage wird deaktiviert");
@@ -95,7 +110,19 @@ public final class TablistImagePlugin extends BasePlugin {
                 config.getString("Tab-Liste.Header", ""),
                 config.getString("Tab-Liste.Header-ohne-Pack", ""),
                 config.getString("Tab-Liste.Footer", ""),
-                config.getInt("Bild.Leerzeilen"));
+                readBlankLines(config));
+    }
+
+    private static int readBlankLines(FileConfiguration config) {
+        String path = "Bild.Leerzeilen";
+        if (config.isInt(path)) {
+            return config.getInt(path);
+        }
+        String value = config.getString(path, "auto").strip();
+        if (value.equalsIgnoreCase("auto")) {
+            return TablistHeader.AUTO;
+        }
+        throw new IllegalArgumentException(path + " muss 'auto' oder eine Zahl sein: " + value);
     }
 
     private TablistSettings settings() {
@@ -217,9 +244,13 @@ public final class TablistImagePlugin extends BasePlugin {
     /** Setzt Kopf- und Fußzeile – mit Grafik nur, wenn der Client das Pack geladen hat. */
     void updateTablist(Player player) {
         TablistSettings config = settings();
+        Banner image = banner;
+        if (image == null) {
+            throw new IllegalStateException("Grafik-Daten noch nicht geladen");
+        }
         String header = packLoaded.contains(player.getUniqueId()) ? config.header() : config.headerWithoutPack();
         player.sendPlayerListHeaderAndFooter(
-                TablistHeader.render(header, config.blankLines()),
-                TablistHeader.render(config.footer(), config.blankLines()));
+                TablistHeader.render(header, image, config.blankLines()),
+                TablistHeader.render(config.footer(), image, config.blankLines()));
     }
 }
