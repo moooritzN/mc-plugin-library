@@ -27,7 +27,8 @@ import org.jspecify.annotations.Nullable;
  *   <li>mehr Lebenspunkte (Standard: 4-fach),</li>
  *   <li>stärkerer Drachenatem und Blitzwellen auf die Spieler im Kampfgebiet,</li>
  *   <li>einmalige Wiederherstellung der End-Kristalle, wenn der Drache die Hälfte seines Lebens verloren hat,</li>
- *   <li>Spieler dürfen die Hauptinsel nicht verlassen, solange der Drache lebt (Warnung, dann Rückteleport).</li>
+ *   <li>Spieler dürfen die Hauptinsel nicht verlassen, solange der erste Drache lebt (Warnung, dann
+ *       Rückteleport) – bei neu beschworenen Drachen gilt das nicht mehr.</li>
  * </ul>
  * Der Rückstoß des Drachen bleibt unverändert.
  */
@@ -42,6 +43,8 @@ public final class AdvancedEnderDragonPlugin extends BasePlugin {
     private @Nullable BoundarySettings boundary;
     /** End-Welten, in denen gerade ein Drachenkampf läuft (aktualisiert vom {@link DragonFightTask}). */
     private final Set<UUID> activeFights = new HashSet<>();
+    /** End-Welten, in denen die Insel-Grenze gerade gilt (Kampf gegen den ersten Drachen). */
+    private final Set<UUID> boundaryWorlds = new HashSet<>();
 
     @Override
     public void onEnable() {
@@ -129,11 +132,24 @@ public final class AdvancedEnderDragonPlugin extends BasePlugin {
         return activeFights.contains(world.getUID());
     }
 
-    void setFightActive(World world, boolean active) {
-        if (active) {
-            activeFights.add(world.getUID());
+    /**
+     * Ob die Insel-Grenze in dieser Welt gilt: nur während des Kampfes gegen den ersten (originalen) Drachen,
+     * nicht bei neu beschworenen Drachen.
+     */
+    boolean isBoundaryActive(World world) {
+        return boundaryWorlds.contains(world.getUID());
+    }
+
+    void setFightActive(World world, boolean fightActive, boolean boundaryActive) {
+        toggle(activeFights, world.getUID(), fightActive);
+        toggle(boundaryWorlds, world.getUID(), boundaryActive);
+    }
+
+    private static void toggle(Set<UUID> set, UUID id, boolean present) {
+        if (present) {
+            set.add(id);
         } else {
-            activeFights.remove(world.getUID());
+            set.remove(id);
         }
     }
 

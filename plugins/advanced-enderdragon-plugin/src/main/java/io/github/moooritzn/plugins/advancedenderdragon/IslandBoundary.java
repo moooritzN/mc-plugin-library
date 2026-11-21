@@ -23,7 +23,8 @@ import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.util.Vector;
 
 /**
- * Hält Spieler während des Drachenkampfes auf der Hauptinsel: Ab dem Warn-Radius gibt es eine Warnung,
+ * Hält Spieler während des Kampfes gegen den ersten (originalen) Drachen auf der Hauptinsel – bei neu
+ * beschworenen Drachen nicht mehr, sonst kämen Spieler nie ins äußere End. Ab dem Warn-Radius gibt es eine Warnung,
  * ab dem Teleport-Radius geht es zurück zur Obsidian-Plattform. Abstände zählen nur horizontal (x/z).
  *
  * <p>Geprüft wird bei jeder Bewegung über eine Blockgrenze und zusätzlich einmal pro Sekunde
@@ -93,7 +94,7 @@ final class IslandBoundary implements Listener {
         UUID id = player.getUniqueId();
         BoundarySettings settings = plugin.boundary();
         World world = location.getWorld();
-        if (!settings.enabled() || world == null || !plugin.isFightActive(world)
+        if (!settings.enabled() || world == null || !plugin.isBoundaryActive(world)
                 || !LightningStrikes.isVulnerable(player)) {
             warned.remove(id);
             return;
@@ -120,6 +121,10 @@ final class IslandBoundary implements Listener {
         }
         if (!plugin.isFightActive(world)) {
             return "<gray>gilt nicht – kein lebender Drache in dieser Welt erkannt";
+        }
+        if (!plugin.isBoundaryActive(world)) {
+            return "<gray>gilt nicht – der Drache wurde in dieser Welt schon einmal besiegt "
+                    + "(Grenze nur beim ersten Drachen)";
         }
         if (!LightningStrikes.isVulnerable(player)) {
             return "<gray>gilt nicht für dich – Spielmodus " + player.getGameMode().name();

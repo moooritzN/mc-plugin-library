@@ -36,8 +36,9 @@ Kristalle:
   Wiederherstellen-bei-Prozent: 50
 
 Insel-Grenze:
-  # Solange der Drache lebt, dürfen Spieler die Hauptinsel nicht verlassen: Ab dem Warn-Radius gibt es eine
+  # Solange der ERSTE Drache lebt, dürfen Spieler die Hauptinsel nicht verlassen: Ab dem Warn-Radius gibt es eine
   # Warnung, ab dem Teleport-Radius geht es zurück zur Obsidian-Plattform (Ankunftsort im End).
+  # Wurde der Drache einmal besiegt, gilt die Grenze nicht mehr – auch nicht bei neu beschworenen Drachen.
   # Abstände in Blöcken, nur horizontal (x/z) von der Mitte (0, 0) gemessen – die Höhe zählt nicht.
   # Zum Vergleich: Die Obsidian-Plattform liegt ca. 100 Blöcke von der Mitte entfernt.
   # Ausgenommen sind nur Spieler im Kreativ-/Zuschauermodus. Mit /enderdrache siehst du, ob die Grenze für dich gilt.

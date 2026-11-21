@@ -42,7 +42,11 @@ final class DragonFightTask implements Runnable {
             }
             EnderDragon dragon = findDragon(world);
             boolean active = dragon != null && dragon.getPhase() != EnderDragon.Phase.DYING;
-            plugin.setFightActive(world, active);
+            // Insel-Grenze nur beim ersten (originalen) Drachen – nach dem ersten Sieg ist das äußere End frei,
+            // auch wenn später ein Drache neu beschworen wird
+            DragonBattle battle = world.getEnderDragonBattle();
+            boolean originalDragon = battle != null && !battle.hasBeenPreviouslyKilled();
+            plugin.setFightActive(world, active, active && originalDragon);
             if (!active) {
                 lightningCountdown.remove(world.getUID());
                 continue;
