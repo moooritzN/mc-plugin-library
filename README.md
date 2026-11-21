@@ -23,8 +23,10 @@ Bibliothek und Sammlung von Minecraft-Server-Plugins für [Paper](https://paperm
 ├── libs/
 │   └── core/                    # -> Gradle-Projekt :mclib-core
 └── plugins/
+    ├── advanced-enderdragon-plugin/ # -> :advanced-enderdragon-plugin (stärkerer Enderdrache)
     ├── deathcounter-plugin/     # -> Gradle-Projekt :deathcounter-plugin
-    └── dimensions-plugin/       # -> Gradle-Projekt :dimensions-plugin (Nether/End deaktivierbar)
+    ├── dimensions-plugin/       # -> Gradle-Projekt :dimensions-plugin (Nether/End deaktivierbar)
+    └── tablist-image-plugin/    # -> Gradle-Projekt :tablist-image-plugin (Grafik in der Tab-Liste)
 ```
 
 Neue Ordner unter `libs/` und `plugins/` werden automatisch in den Build aufgenommen,
@@ -40,6 +42,34 @@ Die fertigen Plugin-JARs liegen danach unter `plugins/<name>/build/libs/<name>-<
 Die Library-Klassen werden per Shadow in das Plugin eingebettet und in das Package des
 Plugins relocated (`<plugin-package>.libs.mclib`), damit sich mehrere Plugins nicht in die Quere kommen.
 
+### Resource Packs
+
+Hat ein Plugin einen Ordner `src/resourcepack/` mit `pack.mcmeta`, wird daraus automatisch
+`plugins/<name>/build/resourcepack/<name>-resourcepack.zip` gebaut (Task `resourcePack`, läuft bei `build` mit).
+Das ZIP ist reproduzierbar (gleicher Inhalt → gleicher SHA-1) und wird mit ins Release bzw. den Dev-Build gelegt.
+Der Dateiname enthält keine Version, damit die Download-URL stabil bleibt:
+
+```
+https://github.com/moooritzN/mc-plugin-library/releases/latest/download/<name>-resourcepack.zip
+https://github.com/moooritzN/mc-plugin-library/releases/download/dev/<name>-resourcepack.zip
+```
+
+`pack.mcmeta` gibt mit `min_format`/`max_format` an, für welche Minecraft-Versionen das Pack gilt
+(84 = 26.1 … 97 = 26.3). Beim Update auf eine neuere Minecraft-Version `max_format` anheben.
+
+### TablistImage – Grafik austauschen
+
+1. Bild als PNG nach `plugins/tablist-image-plugin/src/banner/bild.png` legen
+   (Transparenz erlaubt, Größe und Seitenverhältnis beliebig).
+2. Optional in [plugins/tablist-image-plugin/build.gradle.kts](plugins/tablist-image-plugin/build.gradle.kts)
+   die Anzeigehöhe `displayHeight` (GUI-Pixel, eine Textzeile = 9) anpassen – die Breite ergibt sich aus dem
+   Seitenverhältnis.
+
+Beim Build zerlegt `FontImageTask` ([build-logic](build-logic/src/main/kotlin/FontImageTask.kt)) das Bild
+automatisch in Kacheln von max. 256×256 Pixeln – größere Schrift-Glyphen kann Minecraft nicht darstellen
+(es erscheint nur ein Ersatzzeichen ▯). Textur und Font-JSON landen im Resource Pack, die Zeichenfolge als
+`bild.properties` im Plugin-JAR. Die Leerzeilen unter dem Bild berechnet das Plugin selbst (`Bild.Leerzeilen: auto`).
+
 ## Releases
 
 Fertige Plugin-JARs gibt es unter **Releases** auf GitHub.
@@ -47,7 +77,7 @@ Fertige Plugin-JARs gibt es unter **Releases** auf GitHub.
 ### Release
 
 Wird ein Pull Request in `develop` gemergt, erstellt der [Release-Workflow](.github/workflows/release.yml)
-das Release `v<version>` mit allen Plugin-JARs. Die Version kommt aus [gradle.properties](gradle.properties)
+das Release `v<version>` mit allen Plugin-JARs und Resource Packs. Die Version kommt aus [gradle.properties](gradle.properties)
 (ohne `-SNAPSHOT`, aus `0.2.0-SNAPSHOT` wird `v0.2.0`).
 
 Existiert das Release für diese Version bereits, wird nichts veröffentlicht. Für ein neues Release
