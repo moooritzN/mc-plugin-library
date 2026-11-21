@@ -54,11 +54,13 @@ jobs:
         if: steps.version.outputs.exists == 'false'
         run: ./gradlew build -Pversion=${{ steps.version.outputs.version }}
 
-      - name: Plugin-JARs sammeln
+      - name: Plugin-JARs und Resource Packs sammeln
         if: steps.version.outputs.exists == 'false'
         run: |
           mkdir -p release
           find plugins/*/build/libs -name '*.jar' ! -name '*-plain.jar' -exec cp {} release/ \;
+          # Resource Packs (ohne Version im Namen -> stabile URL über releases/latest/download/...)
+          find plugins/*/build -path '*/build/resourcepack/*.zip' -exec cp {} release/ \;
           ls -l release
 
       - name: GitHub-Release erstellen
@@ -67,7 +69,7 @@ jobs:
           VERSION: ${{ steps.version.outputs.version }}
           TARGET: ${{ github.event.pull_request.merge_commit_sha }}
         run: |
-          gh release create "v$VERSION" release/*.jar \
+          gh release create "v$VERSION" release/* \
             --target "$TARGET" \
             --title "v$VERSION" \
             --generate-notes

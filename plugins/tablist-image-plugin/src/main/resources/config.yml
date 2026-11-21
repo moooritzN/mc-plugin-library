@@ -1,0 +1,31 @@
+# TablistImage – zeigt eine Grafik oben in der Tab-Spielerliste an.
+# Änderungen mit /tablistimage reload übernehmen (Berechtigung: tablistimage.admin).
+#
+# Die Grafik wird über ein Resource Pack ausgeliefert, das Spieler beim Betreten des Servers erhalten.
+# Bis das Pack geladen ist (oder falls ein Spieler es ablehnt), wird "Header-ohne-Pack" angezeigt.
+
+Resource-Pack:
+  # Download-URL des Packs (ZIP). Standard: das Pack aus dem neuesten GitHub-Release.
+  # Für Dev-Builds: https://github.com/moooritzN/mc-plugin-library/releases/download/dev/tablist-image-plugin-resourcepack.zip
+  URL: "https://github.com/moooritzN/mc-plugin-library/releases/latest/download/tablist-image-plugin-resourcepack.zip"
+  # SHA-1-Hash des Packs (40 Hex-Zeichen). Leer lassen = wird beim Start/Reload automatisch berechnet,
+  # dazu lädt der Server das Pack einmal selbst herunter.
+  SHA1: ""
+  # true = Spieler, die das Pack ablehnen, werden vom Server getrennt.
+  Pflicht: false
+  # Text im Dialog, in dem der Spieler das Pack annehmen kann (MiniMessage).
+  Hinweis: "<gray>Dieses Pack wird für die Grafik in der Tab-Liste benötigt."
+
+Tab-Liste:
+  # Kopfzeile über der Spielerliste (MiniMessage). <bild> = die Grafik.
+  Header: "<bild>"
+  # Kopfzeile, solange das Pack nicht geladen ist bzw. wenn es abgelehnt wurde. Leer = keine Kopfzeile.
+  Header-ohne-Pack: ""
+  # Fußzeile unter der Spielerliste (MiniMessage). Leer = keine Fußzeile.
+  Footer: ""
+
+Bild:
+  # Anzahl Leerzeilen, die nach <bild> eingefügt werden, damit nachfolgender Text nicht von der Grafik
+  # überdeckt wird. Faustregel: Bildhöhe aus der Font-Datei (height) / 9, aufgerundet, minus 1.
+  # Standard-Grafik (Zittern-Banner): height 60 -> 6
+  Leerzeilen: 6

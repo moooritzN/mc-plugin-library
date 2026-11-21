@@ -21,9 +21,11 @@ jobs:
       - name: Build & Test
         run: ./gradlew build
 
-      - name: Plugin-JARs hochladen
+      - name: Plugin-JARs und Resource Packs hochladen
         uses: actions/upload-artifact@v4
         with:
           name: plugins
-          path: plugins/*/build/libs/*.jar
+          path: |
+            plugins/*/build/libs/*.jar
+            plugins/*/build/resourcepack/*.zip
           if-no-files-found: error

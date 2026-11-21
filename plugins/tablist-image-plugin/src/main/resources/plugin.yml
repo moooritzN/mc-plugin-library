@@ -1,0 +1,10 @@
+name: TablistImage
+version: '${version}'
+main: io.github.moooritzn.plugins.tablistimage.TablistImagePlugin
+api-version: '${apiVersion}'
+description: Zeigt eine Grafik (per Resource Pack) oben in der Tab-Spielerliste an
+
+permissions:
+  tablistimage.admin:
+    description: Erlaubt /tablistimage reload
+    default: op

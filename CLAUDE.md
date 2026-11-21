@@ -18,6 +18,7 @@ Kein lokales Gradle verwenden – immer den Wrapper (`./gradlew`). Java 25 ist P
 - `plugins/<name>-plugin/` → Gradle-Projekt `:<name>-plugin`, Plugin `mclib.plugin-conventions`, Package `io.github.moooritzn.plugins.<name>` (ohne `-plugin`-Suffix, ohne Bindestriche)
 - Neue Ordner werden von [settings.gradle.kts](settings.gradle.kts) automatisch eingebunden, sobald sie eine `build.gradle.kts` haben – nichts manuell in `settings` eintragen.
 - Build-Logik gehört in die Convention-Plugins unter [build-logic/src/main/kotlin/](build-logic/src/main/kotlin/), nicht in einzelne Modul-Builds.
+- Resource Packs: `plugins/<name>/src/resourcepack/` (mit `pack.mcmeta`) wird von der Plugin-Convention automatisch zu `build/resourcepack/<name>-resourcepack.zip` gepackt (reproduzierbar, ohne Version im Namen) und von den Release-/Dev-Workflows mit hochgeladen. Bei Minecraft-Updates `max_format` in `pack.mcmeta` anheben.
 - Alle Versionen nur in [gradle/libs.versions.toml](gradle/libs.versions.toml). Die Minecraft-Version (`api-version`, `runServer`) wird aus der `paper`-Version abgeleitet (`26.3.build.200-stable` → `26.3`).
 
 ## Wichtige Konventionen

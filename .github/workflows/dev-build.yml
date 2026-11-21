@@ -41,7 +41,7 @@ jobs:
       - name: Build & Test
         run: ./gradlew build "-Pversion=${{ steps.version.outputs.version }}"
 
-      - name: Plugin-JARs sammeln
+      - name: Plugin-JARs und Resource Packs sammeln
         env:
           VERSION: ${{ steps.version.outputs.version }}
         run: |
@@ -51,6 +51,8 @@ jobs:
             name=$(basename "$jar" "-$VERSION.jar")
             cp "$jar" "release/$name-dev.jar"
           done
+          # Resource Packs behalten ihren Namen: .../releases/download/dev/<plugin>-resourcepack.zip
+          find plugins/*/build -path '*/build/resourcepack/*.zip' -exec cp {} release/ \;
           ls -l release
 
       - name: Dev-Release ersetzen
@@ -58,7 +60,7 @@ jobs:
           VERSION: ${{ steps.version.outputs.version }}
         run: |
           gh release delete dev --cleanup-tag --yes || true
-          gh release create dev release/*.jar \
+          gh release create dev release/* \
             --target "$GITHUB_SHA" \
             --prerelease \
             --latest=false \
