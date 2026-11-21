@@ -1,0 +1,59 @@
+# AdvancedEnderDragon – ein deutlich stärkerer Enderdrache.
+# Änderungen mit /enderdrache reload übernehmen (Berechtigung: advancedenderdragon.admin).
+#
+# Der Rückstoß des Drachen (Flügel/Körper) wird NICHT verändert. Die Blitze verursachen keinen Rückstoß.
+
+# Faktor für die maximalen Lebenspunkte (Vanilla: 200). 4.0 = 800 Lebenspunkte.
+# Ein bereits verletzter Drache behält beim Ändern seinen prozentualen Lebensstand.
+Leben-Multiplikator: 4.0
+
+# Faktor für den Schaden des Drachenatems (lila Wolken von Feuerbällen und Atemangriff). 1.0 = Vanilla.
+Drachenatem-Schaden-Multiplikator: 2.0
+
+# Radius in Blöcken um die Mitte des Ends (0, 0), in dem Spieler als Kampfteilnehmer gelten.
+Kampf-Radius: 150
+
+Blitze:
+  # Blitzwellen während des Kampfes
+  Aktiv: true
+  # Abstand zwischen zwei Blitzwellen in Sekunden
+  Intervall-Sekunden: 12
+  # Wie viele Spieler pro Welle anvisiert werden (zufällig ausgewählt)
+  Ziele-pro-Welle: 3
+  # Vorwarnung in Ticks (20 Ticks = 1 Sekunde): So lange knistert es am Zielort, bevor der Blitz einschlägt.
+  # Wer rechtzeitig wegläuft, wird nicht getroffen.
+  Vorwarnung-Ticks: 30
+  # Schaden pro Einschlag (2 = 1 Herz) für alle Spieler im Radius
+  Schaden: 10.0
+  # Wirkungsradius eines Einschlags in Blöcken
+  Radius: 3.0
+  # Zusätzlich ein Blitz (ohne Vorwarnung) dort, wo ein Feuerball des Drachen einschlägt
+  Bei-Feuerball-Einschlag: true
+
+Kristalle:
+  # Fällt das Leben des Drachen auf diesen Wert (in Prozent), erscheinen auf allen Säulen ohne Kristall
+  # einmalig neue End-Kristalle, die den Drachen wieder heilen. 0 = deaktiviert.
+  Wiederherstellen-bei-Prozent: 50
+
+Insel-Grenze:
+  # Solange der Drache lebt, dürfen Spieler die Hauptinsel nicht verlassen: Ab dem Warn-Radius gibt es eine
+  # Warnung, ab dem Teleport-Radius geht es zurück zur Obsidian-Plattform (Ankunftsort im End).
+  # Abstände in Blöcken, nur horizontal (x/z) von der Mitte (0, 0) gemessen – die Höhe zählt nicht.
+  # Zum Vergleich: Die Obsidian-Plattform liegt ca. 100 Blöcke von der Mitte entfernt.
+  # Ausgenommen: Kreativ-/Zuschauermodus und Berechtigung advancedenderdragon.bypass.
+  Aktiv: true
+  Warn-Radius: 120
+  Teleport-Radius: 150
+  # Nachrichten (MiniMessage). Leer = keine Nachricht.
+  Nachrichten:
+    # Titel beim Betreten der Warnzone
+    Warnung-Titel: "<red><bold>Kehre um!"
+    Warnung-Untertitel: "<gray>Solange der Drache lebt, darfst du die Hauptinsel nicht verlassen"
+    # Hinweis in der Actionbar, solange man in der Warnzone ist. <bloecke> = Blöcke bis zur Teleportation
+    Warnung-Actionbar: "<yellow>⚠ Noch <gold><bloecke></gold> Blöcke, dann wirst du zur Plattform zurückteleportiert"
+    # Nachricht nach dem Zurückteleportieren
+    Teleportiert: "<red>Du hast die Hauptinsel verlassen und wurdest zur Plattform zurückgebracht."
+
+# Nachrichten an alle Spieler im End (MiniMessage). Leer = keine Nachricht.
+Nachrichten:
+  Kristalle-wiederhergestellt: "<dark_purple><bold>Der Enderdrache ruft seine Kristalle zurück!</bold> <light_purple>(<anzahl> neue Kristalle)"

@@ -1,0 +1,13 @@
+name: AdvancedEnderDragon
+version: '${version}'
+main: io.github.moooritzn.plugins.advancedenderdragon.AdvancedEnderDragonPlugin
+api-version: '${apiVersion}'
+description: Stärkerer Enderdrache mit mehr Leben, Blitzangriffen und Kristall-Wiederherstellung
+
+permissions:
+  advancedenderdragon.admin:
+    description: Erlaubt /enderdrache (Status, reload)
+    default: op
+  advancedenderdragon.bypass:
+    description: Darf die End-Hauptinsel auch während des Drachenkampfes verlassen
+    default: false

@@ -23,6 +23,7 @@ Bibliothek und Sammlung von Minecraft-Server-Plugins für [Paper](https://paperm
 ├── libs/
 │   └── core/                    # -> Gradle-Projekt :mclib-core
 └── plugins/
+    ├── advanced-enderdragon-plugin/ # -> :advanced-enderdragon-plugin (stärkerer Enderdrache)
     ├── deathcounter-plugin/     # -> Gradle-Projekt :deathcounter-plugin
     ├── dimensions-plugin/       # -> Gradle-Projekt :dimensions-plugin (Nether/End deaktivierbar)
     └── tablist-image-plugin/    # -> Gradle-Projekt :tablist-image-plugin (Grafik in der Tab-Liste)
