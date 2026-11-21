@@ -28,12 +28,10 @@ import org.bukkit.util.Vector;
  *
  * <p>Geprüft wird bei jeder Bewegung über eine Blockgrenze und zusätzlich einmal pro Sekunde
  * ({@link #check}), damit auch Spieler erfasst werden, die z.B. per Enderperle hinausgelangt sind und
- * stillstehen. Ausgenommen sind Spieler im Kreativ-/Zuschauermodus und mit {@value #BYPASS_PERMISSION}.
+ * stillstehen. Ausgenommen sind nur Spieler im Kreativ-/Zuschauermodus – bewusst keine Bypass-Berechtigung,
+ * da Admins mit {@code *}-Rechten sonst unbemerkt ausgenommen wären.
  */
 final class IslandBoundary implements Listener {
-
-    /** Spieler mit dieser Berechtigung dürfen die Insel auch während des Kampfes verlassen. */
-    static final String BYPASS_PERMISSION = "advancedenderdragon.bypass";
 
     private static final Duration ACTION_BAR_INTERVAL = Duration.ofSeconds(1);
     private static final Title.Times TITLE_TIMES =
@@ -96,7 +94,7 @@ final class IslandBoundary implements Listener {
         BoundarySettings settings = plugin.boundary();
         World world = location.getWorld();
         if (!settings.enabled() || world == null || !plugin.isFightActive(world)
-                || !LightningStrikes.isVulnerable(player) || player.hasPermission(BYPASS_PERMISSION)) {
+                || !LightningStrikes.isVulnerable(player)) {
             warned.remove(id);
             return;
         }
@@ -108,6 +106,28 @@ final class IslandBoundary implements Listener {
                 teleportBack(player, world, settings);
             }
         }
+    }
+
+    /** Beschreibt für {@code /enderdrache}, ob und warum die Grenze für den Spieler gerade (nicht) gilt. */
+    String describe(Player player) {
+        BoundarySettings settings = plugin.boundary();
+        World world = player.getWorld();
+        if (!settings.enabled()) {
+            return "<red>aus</red> <gray>(Insel-Grenze.Aktiv: false)";
+        }
+        if (world.getEnvironment() != World.Environment.THE_END) {
+            return "<gray>gilt nicht – du bist nicht im End";
+        }
+        if (!plugin.isFightActive(world)) {
+            return "<gray>gilt nicht – kein lebender Drache in dieser Welt erkannt";
+        }
+        if (!LightningStrikes.isVulnerable(player)) {
+            return "<gray>gilt nicht für dich – Spielmodus " + player.getGameMode().name();
+        }
+        Location location = player.getLocation();
+        long distance = Math.round(BoundarySettings.horizontalDistance(location.getX(), location.getZ()));
+        return "<green>aktiv</green> <gray>– dein Abstand: " + distance + " Blöcke (Warnung ab "
+                + Math.round(settings.warnRadius()) + ", Teleport ab " + Math.round(settings.teleportRadius()) + ")";
     }
 
     private void warn(Player player, BoundarySettings settings, Location location) {

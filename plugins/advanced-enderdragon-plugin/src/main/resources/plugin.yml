@@ -8,6 +8,3 @@ permissions:
   advancedenderdragon.admin:
     description: Erlaubt /enderdrache (Status, reload)
     default: op
-  advancedenderdragon.bypass:
-    description: Darf die End-Hauptinsel auch während des Drachenkampfes verlassen
-    default: false

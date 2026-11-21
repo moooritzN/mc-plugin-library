@@ -11,6 +11,7 @@ import org.bukkit.World;
 import org.bukkit.boss.DragonBattle;
 import org.bukkit.entity.EnderDragon;
 import org.bukkit.entity.Player;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Läuft einmal pro Sekunde und kümmert sich in jeder End-Welt mit laufendem Drachenkampf um
@@ -39,22 +40,40 @@ final class DragonFightTask implements Runnable {
             if (world.getEnvironment() != World.Environment.THE_END) {
                 continue;
             }
-            DragonBattle battle = world.getEnderDragonBattle();
-            EnderDragon dragon = battle == null ? null : battle.getEnderDragon();
-            boolean active = dragon != null && dragon.isValid() && dragon.getPhase() != EnderDragon.Phase.DYING;
+            EnderDragon dragon = findDragon(world);
+            boolean active = dragon != null && dragon.getPhase() != EnderDragon.Phase.DYING;
             plugin.setFightActive(world, active);
             if (!active) {
                 lightningCountdown.remove(world.getUID());
                 continue;
             }
-            plugin.applyHealth(dragon);
-            plugin.restoreCrystalsIfDue(dragon);
-            tickLightning(world);
-            // Auch stillstehende Spieler prüfen (z.B. per Enderperle über die Grenze gelangt)
+            // Zuerst die Insel-Grenze, damit sie auch greift, falls ein späterer Schritt fehlschlägt.
+            // Auch stillstehende Spieler prüfen (z.B. per Enderperle über die Grenze gelangt).
             for (Player player : world.getPlayers()) {
                 islandBoundary.check(player, player.getLocation());
             }
+            plugin.applyHealth(dragon);
+            plugin.restoreCrystalsIfDue(dragon);
+            tickLightning(world);
         }
+    }
+
+    /**
+     * Der lebende Drache dieser End-Welt: bevorzugt aus dem Drachenkampf, sonst (z.B. falls der Kampf-Status
+     * den Drachen nicht kennt) direkt unter den geladenen Entities gesucht.
+     */
+    static @Nullable EnderDragon findDragon(World world) {
+        DragonBattle battle = world.getEnderDragonBattle();
+        EnderDragon dragon = battle == null ? null : battle.getEnderDragon();
+        if (dragon != null && dragon.isValid()) {
+            return dragon;
+        }
+        for (EnderDragon candidate : world.getEntitiesByClass(EnderDragon.class)) {
+            if (candidate.isValid()) {
+                return candidate;
+            }
+        }
+        return null;
     }
 
     private void tickLightning(World world) {

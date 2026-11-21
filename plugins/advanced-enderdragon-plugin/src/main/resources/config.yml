@@ -40,7 +40,7 @@ Insel-Grenze:
   # Warnung, ab dem Teleport-Radius geht es zurück zur Obsidian-Plattform (Ankunftsort im End).
   # Abstände in Blöcken, nur horizontal (x/z) von der Mitte (0, 0) gemessen – die Höhe zählt nicht.
   # Zum Vergleich: Die Obsidian-Plattform liegt ca. 100 Blöcke von der Mitte entfernt.
-  # Ausgenommen: Kreativ-/Zuschauermodus und Berechtigung advancedenderdragon.bypass.
+  # Ausgenommen sind nur Spieler im Kreativ-/Zuschauermodus. Mit /enderdrache siehst du, ob die Grenze für dich gilt.
   Aktiv: true
   Warn-Radius: 120
   Teleport-Radius: 150

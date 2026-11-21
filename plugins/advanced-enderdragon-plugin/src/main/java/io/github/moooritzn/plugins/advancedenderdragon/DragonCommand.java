@@ -7,9 +7,9 @@ import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.World;
-import org.bukkit.boss.DragonBattle;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EnderDragon;
+import org.bukkit.entity.Player;
 
 /**
  * Befehl {@code /enderdrache} (zeigt den Zustand aller Drachenkämpfe) und {@code /enderdrache reload}.
@@ -20,11 +20,15 @@ final class DragonCommand {
     private DragonCommand() {
     }
 
-    static LiteralCommandNode<CommandSourceStack> create(AdvancedEnderDragonPlugin plugin) {
+    static LiteralCommandNode<CommandSourceStack> create(AdvancedEnderDragonPlugin plugin, IslandBoundary boundary) {
         return Commands.literal("enderdrache")
                 .requires(source -> source.getSender().hasPermission(AdvancedEnderDragonPlugin.ADMIN_PERMISSION))
                 .executes(context -> {
-                    sendStatus(plugin, context.getSource().getSender());
+                    CommandSender sender = context.getSource().getSender();
+                    sendStatus(plugin, sender);
+                    if (sender instanceof Player player) {
+                        sender.sendMessage(Text.mm("<gray>Insel-Grenze für dich: " + boundary.describe(player)));
+                    }
                     return Command.SINGLE_SUCCESS;
                 })
                 .then(Commands.literal("reload")
@@ -44,10 +48,9 @@ final class DragonCommand {
     private static void sendStatus(AdvancedEnderDragonPlugin plugin, CommandSender sender) {
         boolean anyFight = false;
         for (World world : plugin.getServer().getWorlds()) {
-            DragonBattle battle = world.getEnvironment() == World.Environment.THE_END
-                    ? world.getEnderDragonBattle() : null;
-            EnderDragon dragon = battle == null ? null : battle.getEnderDragon();
-            if (dragon == null || !dragon.isValid()) {
+            EnderDragon dragon = world.getEnvironment() == World.Environment.THE_END
+                    ? DragonFightTask.findDragon(world) : null;
+            if (dragon == null) {
                 continue;
             }
             anyFight = true;

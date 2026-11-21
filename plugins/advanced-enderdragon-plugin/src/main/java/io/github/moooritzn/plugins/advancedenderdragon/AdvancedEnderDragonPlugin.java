@@ -59,7 +59,7 @@ public final class AdvancedEnderDragonPlugin extends BasePlugin {
         getServer().getScheduler().runTaskTimer(this, new DragonFightTask(this, lightning, islandBoundary),
                 DragonFightTask.PERIOD_TICKS, DragonFightTask.PERIOD_TICKS);
         getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, event ->
-                event.registrar().register(DragonCommand.create(this),
+                event.registrar().register(DragonCommand.create(this, islandBoundary),
                         "Status des Enderdrachen anzeigen oder Konfiguration neu laden", List.of()));
     }
 
